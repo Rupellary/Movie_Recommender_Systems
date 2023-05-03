@@ -4,6 +4,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from lifelines.utils import concordance_index
 import difflib
 import numpy as np
+import re
 
 
 
@@ -24,8 +25,22 @@ def find_by_name(title, movies_df, thresh=0.6):
     INPUTS: title = string that is close to the stored title
             movies_df = dataframe with movie titles
             thresh = specifies how similar the word must be to match
-    OUTPUTS: closest title in the dataset as it is written in the dataset, or None if none can be found"""
-    closest_match = difflib.get_close_matches(title, movies_df['title'], n=1, cutoff=thresh)
+    OUTPUTS: closest title in the dataset as it is written in the dataset, or None if none can be found
+    """
+    # Capitalize certain words
+    low_case_words = ["the", "of", "and", "to"]
+    words = title.split(' ')
+    for i in range(len(words)):
+        if words[i] not in low_case_words:
+            words[i] = words[i].capitalize()
+        else: continue
+    title = ' '.join(words)
+    # If the title starts with 'The', move it to the end of the string
+    if re.match(r'^the', title, re.IGNORECASE):
+        adjusted_title = title[3:] + ', The' # adjust input titles with "The" to the format used by the database
+    else: adjusted_title = title
+    # Use difflib library to find closest strings in the dataset
+    closest_match = difflib.get_close_matches(adjusted_title, movies_df['title'], n=1, cutoff=thresh)
     if closest_match:
         return closest_match[0]
     else:
@@ -109,7 +124,9 @@ def item_based_rec(title, ratings_df, movies_df, n, shared_thresh=3, total_thres
     OUTPUTS: topn_df = returns specified number of most similar movies, number of columns based on input for more_data argument
     """
     if find_by_name(title, movies_df, thresh=0.6) == None:
-        print('ERROR: Movie name not found')
+        error_string= 'Error: Title not recognized. Try adding subtitle (eg. "Star Wars" --> "Star Wars Episode IV - A New Hope")'
+        print(error_string)
+        #return error_string
     else:
         # pivot ratings data frame into one with movies as columns, users as rows, and ratings as cell values
         pivoted_df = pd.pivot_table(ratings_df, 
@@ -118,6 +135,9 @@ def item_based_rec(title, ratings_df, movies_df, n, shared_thresh=3, total_thres
                                     columns='movieId')
         # get movie id using name
         movie_id = int(movies_df.loc[movies_df['title'] == find_by_name(title, movies_df, thresh=0.6), 'movieId'])
+        # get dataset's title to print with
+        real_title = movies_df.loc[movies_df['movieId']==movie_id].reset_index()['title'][0]
+        print(f"Top {n} titles similar to {real_title}:")
         # get ratings of movie from all users
         ratings = pivoted_df[movie_id]
         # corrlate user ratings of input movie with user ratings of all other movies
@@ -221,3 +241,12 @@ def score_est(ratings, estimations):
                                'Concordance Index':[c_i],
                                'R Squared':[r2]})
     return scoring_df
+
+
+
+# STREAMLIT
+def get_random_title(movies_df, thresh):
+    """Description: returns a random title in the database that has at least as many reviews as the specified threshold
+    INPUTS: movies_df = a data frame with the movies to be randomly selected from
+            thresh = the minimum number of reviews a movie must have to be considered
+    OUTPUTS: random_title = the title of a movie"""
