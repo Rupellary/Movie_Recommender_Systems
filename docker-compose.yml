@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/home
+    ports:
+      - 1234:8501
+    command: tail -F anything
