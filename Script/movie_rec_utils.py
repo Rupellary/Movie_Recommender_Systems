@@ -161,7 +161,7 @@ def item_based_rec(title, ratings_df, movies_df, n, shared_thresh=3, total_thres
         # get additional movie information including titles
         topn_df = topn_corr.merge(movies_df, how='left', on='movieId')
         if more_data == True:
-            return topn_df
+            return topn_df.drop(columns='movieId')
         # if additional data is not wanted, return only title column
         else: return topn_df['title']
 

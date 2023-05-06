@@ -28,7 +28,7 @@ title = st.text_input(label='Write the title of a movie you enjoyed',
                       value='The Godfather')
 # Get the title as it is in the database and confirm it with the user
 if find_by_name(title, movies_df, thresh=0.6) == None:
-    st.markdown('**:red[Im sorry, this title could not be found. Try adding the subtitle (eg. "Star Wars" -> "Star Wars Episode IV - A New Hope")]**')
+    st.markdown('**:red[Im sorry, this title could not be found. Try adding the subtitle and/or using roman numerals (eg. "Star Wars 4" -> "Star Wars Episode IV - A New Hope")]**')
 else:
     movie_id = int(movies_df.loc[movies_df['title'] == find_by_name(title, movies_df, thresh=0.6), 'movieId'])
     real_title = movies_df.loc[movies_df['movieId']==movie_id].reset_index()['title'][0]
@@ -39,6 +39,12 @@ num = st.number_input(label='How many movies do you want recommended?',
                       value=5, 
                       step=1)
 
+# User inputs whether or not they would like more data than the title
+more_data = st.selectbox('Would you like additional data on the correlations?', ['Yes, more data please', 'No, just the titles'])
+if more_data == 'Yes, more data please':
+    extra_data = True
+else: extra_data = False    
+
 # Search button actually runs the function and displays the outputs
 clicked = st.button(label='Search') 
 
@@ -47,9 +53,9 @@ if clicked == True:
                             ratings_df=ratings_df,
                             movies_df=movies_df,
                             n=num,
-                            shared_thresh=5,
+                            shared_thresh=20,
                             total_thresh=15,
-                            more_data=False))
+                            more_data=extra_data))
     clicked = False
 
 
