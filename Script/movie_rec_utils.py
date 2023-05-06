@@ -245,6 +245,8 @@ def score_est(ratings, estimations):
 
 
 # STREAMLIT
+
+# This function would be for user-based collaborative filtering on streamlit, but this part of the project is unlikely to be finished
 def get_random_title(movies_df, thresh):
     """Description: returns a random title in the database that has at least as many reviews as the specified threshold
     INPUTS: movies_df = a data frame with the movies to be randomly selected from

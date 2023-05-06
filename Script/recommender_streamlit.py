@@ -66,15 +66,16 @@ if clicked == True:
     clicked = False
 
 
-# User-Based Collaborative Filtering
-#st.write("""
-### Item-Based Collaborative Filtering
-#Get shown random titles and rate them, then see movies that users who gave similar reviews liked
-#""")
 
 
 # What if we presented a title from the database at random and gave the user 
 # the option to rate or pass. Then these ratings would be stored under a new user 
 # and a user-based collaborative filtering could be employed
+
+# User-Based Collaborative Filtering
+#st.write("""
+### User-Based Collaborative Filtering
+#Get shown random titles and rate them, then see movies that users who gave similar reviews liked
+#""")
 
 # review = st.selectbox('Review', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
