@@ -5,8 +5,13 @@ from movie_rec_utils import *
 # streamlit run C:\Users\rockw\WBS\RecommenderSystems\Script\recommender_streamlit.py
 
 # Read Data
-movies_df = pd.read_csv('C:/Users/rockw/WBS/RecommenderSystems/Data/movies.csv')
-ratings_df = pd.read_csv('C:/Users/rockw/WBS/RecommenderSystems/Data/ratings.csv')
+#movies_df = pd.read_csv('C:/Users/rockw/WBS/RecommenderSystems/Data/movies.csv')
+#ratings_df = pd.read_csv('C:/Users/rockw/WBS/RecommenderSystems/Data/ratings.csv')
+
+# Read Data Docker Version
+movies_df = pd.read_csv('/home/Data/movies.csv')
+ratings_df = pd.read_csv('/home/Data/ratings.csv')
+
 
 # Header Text
 st.title('Movie Recommender')
@@ -49,13 +54,15 @@ else: extra_data = False
 clicked = st.button(label='Search') 
 
 if clicked == True:
-    st.write(item_based_rec(title, 
-                            ratings_df=ratings_df,
-                            movies_df=movies_df,
-                            n=num,
-                            shared_thresh=20,
-                            total_thresh=15,
-                            more_data=extra_data))
+    data_df = item_based_rec(title, 
+                             ratings_df=ratings_df,
+                             movies_df=movies_df,
+                             n=num,
+                             shared_thresh=20,
+                             total_thresh=15,
+                             more_data=extra_data)
+    data_formatted = data_df[['title', 'PearsonR', 'genres']].rename(columns={'title':'Movie Title', 'PearsonR':'Correlation', 'genres':'Genres'})
+    st.write(data_formatted)
     clicked = False
 
 
